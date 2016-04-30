@@ -1,3 +1,6 @@
+// PersistenceManagerFactory.java
+//
+// A standard java class in GAE that is used to manage JDO objects
 package com.sudheer.assignment3;
 //imports
 import javax.jdo.JDOHelper;
