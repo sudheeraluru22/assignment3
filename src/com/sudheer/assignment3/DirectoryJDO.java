@@ -22,7 +22,7 @@ public class DirectoryJDO {
 	@Persistent
 	private String dirName;
 	@Persistent
-	private Long parentDirID;
+	private String parentDirID;
 	/*@Persistent
 	private String userID;*/
 	@Persistent(mappedBy="directory")
@@ -37,7 +37,7 @@ public class DirectoryJDO {
 	 * @param dirName
 	 * @param parentDirID
 	 */
-	public DirectoryJDO( String dirName, Long parentDirID) {
+	public DirectoryJDO( String dirName, String parentDirID) {
 		//this.dirID = dirID;
 		this.dirName = dirName;
 		this.parentDirID = parentDirID;
@@ -70,13 +70,13 @@ public class DirectoryJDO {
 	/**
 	 * @return the parentDirID
 	 */
-	public Long getParentDirID() {
+	public String getParentDirID() {
 		return parentDirID;
 	}
 	/**
 	 * @param parentDirID the parentDirID to set
 	 */
-	public void setParentDirID(Long parentDirID) {
+	public void setParentDirID(String parentDirID) {
 		this.parentDirID = parentDirID;
 	}
 	/**

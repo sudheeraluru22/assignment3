@@ -18,28 +18,44 @@
 				You can signout <a href="${logout_url}" style="color:red">Here</a><br />
 				<!-- add in a small form to allow the user to update the timezone with a number -->
 			</p>
+			
+			
 			<p>----------------------------------------------------------------------------------------------</p>
-			Current Directory Path : /<c:out value="${requestScope.currentDirectory.dirName}"></c:out><br><br>
-			<form action="/" method="post">
+			Current Directory Path :<a href="/root?id=&action=load"> /</a><c:out value="${requestScope.currentDirectory.dirName}"></c:out><br><br>
+			<form action="/root" method="post">
 				Please Enter Directory Name:
-				<input type="text" name="directoryName" />
+				<c:choose>
+					<c:when test="${requestScope.action=='update'}">
+					<input type="text" name="directoryName" value="${requestScope.currentDirectory.dirName}" />
+						<input type="submit" value="Update" name="button"/>
+					</c:when>
+					<c:otherwise>
+						<input type="text" name="directoryName" />
+						<input type="submit" value="Create" name="button"/>
+					</c:otherwise>
+				</c:choose>
+				
+				
 				<input type="hidden" name="currentDirectoryID" value="${requestScope.currentDirectory.id}" />
-				<input type="submit" value="Create"/>
+				
 			</form>
+			<br><br>
+			<b style="color:#8904B1"><i><c:out value="${requestScope.message}"></c:out></i></b>
 			<p>----------------------------------------------------------------------------------------------</p>
 			<br><br>
 			<%-- Using JSTL forEach and out to loop a list and display items in table --%>
 			 <c:if test="${directoriesList != null}"> 
 				<table border="1" >
 				<tbody>
-				<tr><th>ID</th><th>Directory Name</th><th>Parent Directory ID</th></tr>
+				<tr><th>ID</th><th>Directory Name</th><th>Parent Directory ID</th><th>Delete</th><th>Update</th></tr>
 				<c:forEach items="${requestScope.directoriesList}" var="directory">
 				<tr>
 					<td><c:out value="${directory.dirID.id}"></c:out></td> 
 				
-				<td><a href="?id=${directory.id}&action=load"><c:out value="${directory.dirName}"></c:out></a></td>
+				<td><a href="/databox?id=${directory.id}&action=load"><c:out value="${directory.dirName}"></c:out></a></td>
 				<td><c:out value="${directory.parentDirID}"></c:out></td>
-				<td><a href="?id=${directory.id}&action=delete"><c:out value="Delete"></c:out></a></td>
+				<td><a href="/root?id=${directory.id}&action=delete"><c:out value="Delete"></c:out></a></td>
+				<td><a href="/root?id=${directory.id}&action=update"><c:out value="Update"></c:out></a></td>
 				</tr>  
 				</c:forEach>
 				</tbody>
