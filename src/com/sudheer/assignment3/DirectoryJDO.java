@@ -25,8 +25,8 @@ public class DirectoryJDO {
 	private String parentDirID;
 	/*@Persistent
 	private String userID;*/
-	@Persistent(mappedBy="directory")
-	private List<FileJDO> fileList=new ArrayList<FileJDO>();
+	/*@Persistent(mappedBy="directory")
+	private List<FileJDO> fileList=new ArrayList<FileJDO>();*/
 	@Persistent
 	private UserJDO userJDO;
 	@Persistent
@@ -94,15 +94,15 @@ public class DirectoryJDO {
 	/**
 	 * @return the fileList
 	 */
-	public List<FileJDO> getFileList() {
+	/*public List<FileJDO> getFileList() {
 		return fileList;
 	}
-	/**
+	*//**
 	 * @param fileList the fileList to set
-	 */
+	 *//*
 	public void setFileList(List<FileJDO> fileList) {
 		this.fileList = fileList;
-	}
+	}*/
 	/**
 	 * @return the userJDO
 	 */

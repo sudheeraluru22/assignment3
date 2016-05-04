@@ -9,21 +9,25 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 import com.google.appengine.api.datastore.Blob;
-
+import com.google.appengine.api.datastore.Key;
 @PersistenceCapable
 public class FileJDO {
 
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Long fileID;
+	private Key fileID;
 	@Persistent
-	private Long parentDirID;
+	private String dirID;
 	@Persistent
 	private String fileName;
 	@Persistent
 	private Blob fileContent;
+	
 	@Persistent
-	private DirectoryJDO directory;
+	private String id;
+	
+	/*@Persistent
+	private DirectoryJDO directory;*/
 	
 	/**
 	 * @param fileID
@@ -31,18 +35,18 @@ public class FileJDO {
 	 * @param fileName
 	 * @param fileContent
 	 */
-	public FileJDO(Long fileID, Long parentDirID, String fileName,
+	/*public FileJDO(Long fileID, Long parentDirID, String fileName,
 			Blob fileContent) {
 		this.fileID = fileID;
 		this.parentDirID = parentDirID;
 		this.fileName = fileName;
 		this.fileContent = fileContent;
-	}
+	}*/
 
 	/**
 	 * @return the fileID
 	 */
-	public Long getFileID() {
+	public Key getFileID() {
 		return fileID;
 	}
 
@@ -50,23 +54,23 @@ public class FileJDO {
 	 * @param fileID
 	 *            the fileID to set
 	 */
-	public void setFileID(Long fileID) {
+	public void setFileID(Key fileID) {
 		this.fileID = fileID;
 	}
 
 	/**
 	 * @return the parentDirID
 	 */
-	public Long getParentDirID() {
-		return parentDirID;
+	public String getDirID() {
+		return dirID;
 	}
 
 	/**
 	 * @param parentDirID
 	 *            the parentDirID to set
 	 */
-	public void setParentDirID(Long parentDirID) {
-		this.parentDirID = parentDirID;
+	public void setDirID(String dirID) {
+		this.dirID = dirID;
 	}
 
 	/**
@@ -100,18 +104,32 @@ public class FileJDO {
 	}
 
 	/**
-	 * @return the directory
+	 * @return the id
 	 */
+	public String getId() {
+		return id;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	/**
+	 * @return the directory
+	 *//*
 	public DirectoryJDO getDirectory() {
 		return directory;
 	}
 
-	/**
+	*//**
 	 * @param directory the directory to set
-	 */
+	 *//*
 	public void setDirectory(DirectoryJDO directory) {
 		this.directory = directory;
-	}
+	}*/
 
 	
 }

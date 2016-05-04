@@ -150,6 +150,7 @@ public class RootServlet extends HttpServlet {
 		try {
 
 			String directoryName = req.getParameter("directoryName").trim();
+			
 			String btton = req.getParameter("button").trim();
 			String parentDirID = req.getParameter("currentDirectoryID");
 			UserService userService = UserServiceFactory.getUserService();
@@ -157,7 +158,7 @@ public class RootServlet extends HttpServlet {
 			String ID = user.getUserId();
 			req.setAttribute("user", user);
 			
-			if(btton.equals("Update")){
+			if(btton.equals("Update")&& !(directoryName==null||directoryName.length()==0)){
 				Query q = pm.newQuery(DirectoryJDO.class);
 				q.setFilter("id ==dirID");
 				q.declareParameters("String dirID");
@@ -165,7 +166,7 @@ public class RootServlet extends HttpServlet {
 				directories = (List<DirectoryJDO>) q.execute(parentDirID);
 				DirectoryJDO directoryJDO=directories.get(0);
 				directoryJDO.setDirName(directoryName);
-			}else{
+			}else if(!(directoryName==null||directoryName.length()==0)){
 				Key user_key = KeyFactory.createKey("UserJDO", ID);
 				UserJDO userJDO = pm.getObjectById(UserJDO.class, user_key);
 				pm.makePersistent(userJDO);
@@ -174,6 +175,8 @@ public class RootServlet extends HttpServlet {
 				directory.setId(randomString(7));
 				directory.setUserJDO(userJDO);
 				pm.makePersistent(directory);
+			}else{
+				req.setAttribute("message", "Please Enter Directory Name");
 			}
 			
 			

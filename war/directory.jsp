@@ -40,6 +40,14 @@
 				
 			</form>
 			<br><br>
+			<form method="post" action="/upload" enctype="multipart/form-data">
+		
+		
+				Please select a file to upload : <input type="file" name="file" />
+				<input type="submit" value="upload" />
+				<input type="hidden" name="currentDirectoryID" value="${requestScope.currentDirectory.id}" />
+			</form>
+			<br><br>
 			<b style="color:#8904B1"><i><c:out value="${requestScope.message}"></c:out></i></b>
 			<p>----------------------------------------------------------------------------------------------</p>
 			<br><br>
