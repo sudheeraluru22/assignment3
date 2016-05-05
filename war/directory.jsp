@@ -21,7 +21,7 @@
 			
 			
 			<p>----------------------------------------------------------------------------------------------</p>
-			Current Directory Path :<a href="/root?id=&action=load"> /</a><c:out value="${requestScope.currentDirectory.dirName}"></c:out><br><br>
+			Current Directory Path :<a href="/root?id=&action=load">/</a><a href="/root?id=${requestScope.navigation.id}&action=load"><c:out value="${requestScope.navigation.label}"></c:out></a><c:out value="${requestScope.currentDirectory.dirName}"></c:out><br><br>
 			<form action="/root" method="post">
 				Please Enter Directory Name:
 				<c:choose>

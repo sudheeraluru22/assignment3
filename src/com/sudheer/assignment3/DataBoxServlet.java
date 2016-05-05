@@ -2,7 +2,9 @@ package com.sudheer.assignment3;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -23,6 +25,7 @@ public class DataBoxServlet extends HttpServlet {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		List<DirectoryJDO> directoriesList=new ArrayList<DirectoryJDO>();
 		List<FileJDO> filesList=new ArrayList<FileJDO>();
+		String parentID="";
 		try {
 			
 			// we are outputting html
@@ -63,10 +66,30 @@ public class DataBoxServlet extends HttpServlet {
 				directories = new ArrayList<DirectoryJDO>();
 				directories = (List<DirectoryJDO>) q.execute(dirID);
 				
+				parentID=directories.get(0).getParentDirID();
+				
+				
 
 				if (action.equals("delete")) {
 					pm.deletePersistent(directories.get(0));
 				} else {
+					
+					
+					if(parentID!=null&&parentID.length()>0){
+						Query fileQuery2=pm.newQuery(DirectoryJDO.class);
+						fileQuery2.setFilter("id==folderID");
+						fileQuery2.declareParameters("String folderID");
+						directoriesList=(List<DirectoryJDO>)fileQuery2.execute(parentID);
+						if(directoriesList.size()>0){
+							DirectoryJDO directoryJDO2=directoriesList.get(0);
+							//navigationList.add(new Navigation(directoryJDO2.getId(), directoryJDO2.getDirName()));
+							Map<String, String> map=new HashMap<String, String>();
+							map.put(directoryJDO2.getId(), directoryJDO2.getDirName());
+							//req.setAttribute(arg0, arg1);
+							req.setAttribute("navigation", new Navigation(directoryJDO2.getId(), directoryJDO2.getDirName()+"/"));
+						}
+					
+					}
 					
 					// Load sub child directories
 					Query query = pm.newQuery(DirectoryJDO.class);

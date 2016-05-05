@@ -1,13 +1,11 @@
 package com.sudheer.assignment3;
 
 import java.io.IOException;
-
-import javax.jdo.PersistenceManager;
-import javax.servlet.RequestDispatcher;
-
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -63,7 +61,20 @@ public class RootServlet extends HttpServlet {
 			
 			
 			RequestDispatcher rd=null;
+			Query query=pm.newQuery(DirectoryJDO.class);
+			query.setFilter("parentDirID ==parentID");
+			query.declareParameters("String parentID");
+			directoriesList = (List<DirectoryJDO>) query.execute("");
 			
+			// Load file List
+			Query fileQuery1=pm.newQuery(FileJDO.class);
+			fileQuery1.setFilter("dirID==folderID");
+			fileQuery1.declareParameters("String folderID");
+			filesList=(List<FileJDO>)fileQuery1.execute("");
+			req.setAttribute("filesList", filesList);
+			
+			System.out.println("RootServlet.doGet()====directoriesList===="+directoriesList.size());
+			req.setAttribute("directoriesList", directoriesList);
 			
 			if (req.getParameter("id") != null) {
 				String dirID = req.getParameter("id");
@@ -77,13 +88,14 @@ public class RootServlet extends HttpServlet {
 				directories = new ArrayList<DirectoryJDO>();
 				directories = (List<DirectoryJDO>) q.execute(dirID);
 				
+				
 
 				if (action.equals("delete")) {
 					DirectoryJDO directoryJDO =directories.get(0);
-					Query query=pm.newQuery(DirectoryJDO.class);
-					query.setFilter("parentDirID ==parentID");
-					query.declareParameters("String parentID");
-					directoriesList = (List<DirectoryJDO>) query.execute(directoryJDO.getId());
+					Query loadQuery=pm.newQuery(DirectoryJDO.class);
+					loadQuery.setFilter("parentDirID ==parentID");
+					loadQuery.declareParameters("String parentID");
+					List<DirectoryJDO>	directoryJDOs = (List<DirectoryJDO>) loadQuery.execute(directoryJDO.getId());
 					
 					// Load file List
 					Query fileQuery=pm.newQuery(FileJDO.class);
@@ -93,7 +105,7 @@ public class RootServlet extends HttpServlet {
 					req.setAttribute("filesList", filesList);
 					
 					
-					if(directoriesList.size()==0&&filesList.size()==0){
+					if(directoryJDOs.size()==0&&filesList.size()==0){
 						pm.deletePersistent(directoryJDO);
 					}else{
 						req.setAttribute("message", "Please Delete childs first and then delete it.");
@@ -121,13 +133,7 @@ public class RootServlet extends HttpServlet {
 					}
 				}
 
-				Query query=pm.newQuery(DirectoryJDO.class);
-				query.setFilter("parentDirID ==parentID");
-				query.declareParameters("String parentID");
-				directoriesList = (List<DirectoryJDO>) query.execute("");
 				
-				System.out.println("RootServlet.doGet()====directoriesList===="+directoriesList.size());
-				req.setAttribute("directoriesList", directoriesList);
 				q.closeAll();
 				rd = req.getRequestDispatcher("/directory.jsp");
 			}else{
@@ -155,7 +161,10 @@ public class RootServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		List<DirectoryJDO> directoriesList=new ArrayList<DirectoryJDO>();
+		List<FileJDO> filesList=new ArrayList<FileJDO>();
 		req.setAttribute("message", "");
+		List<Navigation> navigationList=new ArrayList<Navigation>();
+		
 		try {
 
 			String directoryName = req.getParameter("directoryName").trim();
@@ -197,14 +206,35 @@ public class RootServlet extends HttpServlet {
 				directoriesList = new ArrayList<DirectoryJDO>();
 				directoriesList = (List<DirectoryJDO>) q.execute(parentDirID);
 				
+				
+				// Load file List
+				Query fileQuery1=pm.newQuery(FileJDO.class);
+				fileQuery1.setFilter("dirID==folderID");
+				fileQuery1.declareParameters("String folderID");
+				filesList=(List<FileJDO>)fileQuery1.execute(parentDirID);
+				req.setAttribute("filesList", filesList);
+				
 				// Load Parent Directory
 				List<DirectoryJDO> directories = null;
 				Query query = pm.newQuery(DirectoryJDO.class);
 				query.setFilter("id ==dirID");
 				query.declareParameters("String dirID");
 				directories = new ArrayList<DirectoryJDO>();
-				directories = (List<DirectoryJDO>) q.execute(parentDirID);
-				req.setAttribute("currentDirectory", directories.get(0));
+				directories = (List<DirectoryJDO>) query.execute(parentDirID);
+				DirectoryJDO directoryJDO=directories.get(0);
+				if(parentDirID!=null&&parentDirID.length()>0){
+					Query fileQuery2=pm.newQuery(DirectoryJDO.class);
+					fileQuery2.setFilter("id==folderID");
+					fileQuery2.declareParameters("String folderID");
+					directoriesList=(List<DirectoryJDO>)fileQuery2.execute(parentDirID);
+					DirectoryJDO directoryJDO2=directoriesList.get(0);
+					navigationList.add(new Navigation(directoryJDO2.getId(), directoryJDO2.getDirName()));
+					Map<String, String> map=new HashMap<String, String>();
+					map.put(directoryJDO2.getId(), directoryJDO2.getDirName());
+					//req.setAttribute(arg0, arg1);
+					req.setAttribute("navigation", new Navigation(directoryJDO2.getId(), directoryJDO2.getDirName()+"/"));
+				}
+				req.setAttribute("currentDirectory", directoryJDO);
 				
 			}else{
 				
@@ -212,6 +242,14 @@ public class RootServlet extends HttpServlet {
 				query.setFilter("parentDirID ==parentID");
 				query.declareParameters("String parentID");
 				directoriesList = (List<DirectoryJDO>) query.execute("");
+				
+				// Load file List
+				Query fileQuery1=pm.newQuery(FileJDO.class);
+				fileQuery1.setFilter("dirID==folderID");
+				fileQuery1.declareParameters("String folderID");
+				filesList=(List<FileJDO>)fileQuery1.execute("");
+				req.setAttribute("filesList", filesList);
+				
 			}
 			
 			req.setAttribute("directoriesList", directoriesList);

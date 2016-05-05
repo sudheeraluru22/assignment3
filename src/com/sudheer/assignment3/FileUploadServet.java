@@ -64,48 +64,56 @@ public class FileUploadServet extends HttpServlet {
 				fileJDO =filesList.get(0);
 				parentDirID=fileJDO.getDirID();
 				
-	            if(action.equals("Delete")){
-	            	// Load file List
+			if (action.equals("Delete")) {
+				// Load file List
+
+				pm.deletePersistent(fileJDO);
+
+				if (parentDirID != null & parentDirID.length() > 0) {
+					// Load sub child directories
+					Query q = pm.newQuery(DirectoryJDO.class);
+					q.setFilter("parentDirID ==parentID");
+					q.declareParameters("String parentID");
+					directoriesList = new ArrayList<DirectoryJDO>();
+					directoriesList = (List<DirectoryJDO>) q
+							.execute(parentDirID);
+
+					// Load Parent Directory
+					List<DirectoryJDO> directories = null;
+					Query query = pm.newQuery(DirectoryJDO.class);
+					query.setFilter("id ==dirID");
+					query.declareParameters("String dirID");
+					directories = new ArrayList<DirectoryJDO>();
+					directories = (List<DirectoryJDO>) q.execute(parentDirID);
+					request.setAttribute("currentDirectory", directories.get(0));
+
+					// Load file List
+					Query fileQuery1 = pm.newQuery(FileJDO.class);
+					fileQuery1.setFilter("dirID==folderID");
+					fileQuery1.declareParameters("String folderID");
+					filesList = (List<FileJDO>) fileQuery1.execute(parentDirID);
+					request.setAttribute("filesList", filesList);
+				} else {
+
+					Query query = pm.newQuery(DirectoryJDO.class);
+					query.setFilter("parentDirID ==parentID");
+					query.declareParameters("String parentID");
+					directoriesList = (List<DirectoryJDO>) query.execute("");
 					
-					pm.deletePersistent(fileJDO);
-					
-					   if(parentDirID!=null&parentDirID.length()>0){
-							// Load sub child directories
-							Query q = pm.newQuery(DirectoryJDO.class);
-							q.setFilter("parentDirID ==parentID");
-							q.declareParameters("String parentID");
-							directoriesList = new ArrayList<DirectoryJDO>();
-							directoriesList = (List<DirectoryJDO>) q.execute(parentDirID);
-							
-							// Load Parent Directory
-							List<DirectoryJDO> directories = null;
-							Query query = pm.newQuery(DirectoryJDO.class);
-							query.setFilter("id ==dirID");
-							query.declareParameters("String dirID");
-							directories = new ArrayList<DirectoryJDO>();
-							directories = (List<DirectoryJDO>) q.execute(parentDirID);
-							request.setAttribute("currentDirectory", directories.get(0));
-							
-							// Load file List
-							Query fileQuery1=pm.newQuery(FileJDO.class);
-							fileQuery1.setFilter("dirID==folderID");
-							fileQuery1.declareParameters("String folderID");
-							filesList=(List<FileJDO>)fileQuery1.execute(parentDirID);
-							request.setAttribute("filesList", filesList);
-						}else{
-							
-							Query query=pm.newQuery(DirectoryJDO.class);
-							query.setFilter("parentDirID ==parentID");
-							query.declareParameters("String parentID");
-							directoriesList = (List<DirectoryJDO>) query.execute("");
-						}
-						
-			            request.setAttribute("directoriesList", directoriesList);
-						RequestDispatcher rd = null;
-						rd = request.getRequestDispatcher("/directory.jsp");
-						rd.forward(request, response);
-						
-	            }else{
+					// Load file List
+					Query fileQuery1 = pm.newQuery(FileJDO.class);
+					fileQuery1.setFilter("dirID==folderID");
+					fileQuery1.declareParameters("String folderID");
+					filesList = (List<FileJDO>) fileQuery1.execute("");
+					request.setAttribute("filesList", filesList);
+				}
+
+				request.setAttribute("directoriesList", directoriesList);
+				RequestDispatcher rd = null;
+				rd = request.getRequestDispatcher("/directory.jsp");
+				rd.forward(request, response);
+
+			}else{
 	            	Blob blob = fileJDO.getFileContent();
 	            	 // obtains response's output stream
 	               // response.setContentType("application/octet-stream");
@@ -227,6 +235,13 @@ public class FileUploadServet extends HttpServlet {
 				query.setFilter("parentDirID ==parentID");
 				query.declareParameters("String parentID");
 				directoriesList = (List<DirectoryJDO>) query.execute("");
+				// Load file List
+				Query fileQuery=pm.newQuery(FileJDO.class);
+				fileQuery.setFilter("dirID==folderID");
+				fileQuery.declareParameters("String folderID");
+				filesList=(List<FileJDO>)fileQuery.execute("");
+				request.setAttribute("filesList", filesList);
+				
 			}
 			
             request.setAttribute("directoriesList", directoriesList);
