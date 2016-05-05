@@ -22,6 +22,7 @@ public class DataBoxServlet extends HttpServlet {
 
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		List<DirectoryJDO> directoriesList=new ArrayList<DirectoryJDO>();
+		List<FileJDO> filesList=new ArrayList<FileJDO>();
 		try {
 			
 			// we are outputting html
@@ -79,6 +80,13 @@ public class DataBoxServlet extends HttpServlet {
 						DirectoryJDO directoryJDO = null;
 						directoryJDO = directories.get(0);
 						req.setAttribute("currentDirectory", directoryJDO);
+						
+						// Load file List
+						Query fileQuery=pm.newQuery(FileJDO.class);
+						fileQuery.setFilter("dirID==folderID");
+						fileQuery.declareParameters("String folderID");
+						filesList=(List<FileJDO>)fileQuery.execute(dirID);
+						req.setAttribute("filesList", filesList);
 					}
 					
 				}

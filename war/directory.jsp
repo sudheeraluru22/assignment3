@@ -70,6 +70,25 @@
 				</table>
 				<br><br>
 			 </c:if> 
+			 
+			 <c:if test="${filesList != null}"> 
+				<table border="1" >
+				<tbody>
+				<tr><th>ID</th><th>File Name</th><th>Delete</th><th>Download</th></tr>
+				<c:forEach items="${requestScope.filesList}" var="fileJdo">
+				<tr>
+					<td><c:out value="${fileJdo.fileID.id}"></c:out></td> 
+				
+				<td><c:out value="${fileJdo.fileName}"></c:out></td>
+				<%-- <td><c:out value="${directory.parentDirID}"></c:out></td> --%>
+				<td><a href="/upload?id=${fileJdo.id}&action=Delete"><c:out value="Delete"></c:out></a></td>
+				<td><a href="/upload?id=${fileJdo.id}&action=Download"><c:out value="Download"></c:out></a></td>
+				</tr>  
+				</c:forEach>
+				</tbody>
+				</table>
+				<br><br>
+			 </c:if> 
 		</c:otherwise>
 	</c:choose>
 </body>

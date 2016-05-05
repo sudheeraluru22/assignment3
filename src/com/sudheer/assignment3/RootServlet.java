@@ -34,6 +34,7 @@ public class RootServlet extends HttpServlet {
 
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		List<DirectoryJDO> directoriesList=new ArrayList<DirectoryJDO>();
+		List<FileJDO> filesList=new ArrayList<FileJDO>();
 		req.setAttribute("message", "");
 		try {
 			
@@ -84,7 +85,15 @@ public class RootServlet extends HttpServlet {
 					query.declareParameters("String parentID");
 					directoriesList = (List<DirectoryJDO>) query.execute(directoryJDO.getId());
 					
-					if(directoriesList.size()==0){
+					// Load file List
+					Query fileQuery=pm.newQuery(FileJDO.class);
+					fileQuery.setFilter("dirID==folderID");
+					fileQuery.declareParameters("String folderID");
+					filesList=(List<FileJDO>)fileQuery.execute(directoryJDO.getId());
+					req.setAttribute("filesList", filesList);
+					
+					
+					if(directoriesList.size()==0&&filesList.size()==0){
 						pm.deletePersistent(directoryJDO);
 					}else{
 						req.setAttribute("message", "Please Delete childs first and then delete it.");
